@@ -2,7 +2,7 @@
   "name": "nodejs-express-mysql",
   "version": "1.0.0",
   "description": "Node.js Restful CRUD API with Node.js, Express and MySQL",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,8 +15,14 @@
   "author": "bezkoder",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
+    "build": "^0.1.4",
     "express": "^4.17.1",
-    "mysql": "^2.17.1"
+    "fix": "0.0.6",
+    "mysql": "^2.17.1",
+    "nodemailer": "^6.6.3",
+    "them": "0.0.4",
+    "to": "^0.2.9"
   }
 }

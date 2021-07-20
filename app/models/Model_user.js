@@ -1,17 +1,41 @@
-const sql = require("./Connect.js");
-
+const sql = require("../../Connect");
+const table = require("../Configs/TableName")
 // constructor
+
 const User = function (user) {
     this.maNguoiDung = user.maNguoiDung
     this.tenNguoiDung = user.tenNguoiDung
+    this.tenHienThi = user.tenHienThi
     this.taiKhoan = user.taiKhoan
     this.matKhau = user.matKhau
     this.email = user.email
+    this.chucVu = user.chucVu
+    this.soDienThoai = user.soDienThoai
     this.loaiNguoiDung = user.loaiNguoiDung
 };
 
+//find all userName
+User.selectUserName = (taiKhoan, matKhau, result) => {
+    sql.query("SELECT * FROM danhSachNguoiDung WHERE taiKhoan = ? AND matKhau = ?",
+    [taiKhoan, matKhau] , (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(err, null);
+            return;
+        }
+        if (res.length) {
+            console.log("found customer: ", res[0]);
+            result(null, res[0]);
+            return;
+        }
+        // not found Customer with the id
+        result({ kind: "not_found" }, null);
+    })
+}
+
+// đăng kí
 User.create = (newCustomer, result) => {
-    sql.query("INSERT INTO danhSachNguoiDung SET ?", newCustomer, (err, res) => {
+    sql.query(`INSERT INTO ${table.USER_Table} SET ?`, newCustomer, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(err, null);
@@ -22,6 +46,7 @@ User.create = (newCustomer, result) => {
     });
 };
 
+// get detail all user with id
 User.findById = (maNguoiDung, result) => {
     sql.query(`SELECT * FROM danhSachNguoiDung WHERE maNguoiDung = ${maNguoiDung}`, (err, res) => {
         if (err) {
@@ -39,7 +64,7 @@ User.findById = (maNguoiDung, result) => {
     });
 };
 
-// All
+// All user trangThai oder 0
 User.getAll = result => {
     sql.query("SELECT * FROM danhSachNguoiDung WHERE trangThai <> 0 AND loaiNguoiDung <> 0" , (err, res) => {
         if (err) {
@@ -64,9 +89,10 @@ User.getFavorite = result => {
         result(null, res);
     });
 };
+
 // Trash
 User.getTrash = result => {
-    sql.query("SELECT * FROM danhSachNguoiDung WHERE trangThai = 0 AND loaiNguoiDung = 0", (err, res) => {
+    sql.query(`SELECT * FROM ${table.USER_Table} WHERE trangThai = 0 AND loaiNguoiDung = 0`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -77,10 +103,15 @@ User.getTrash = result => {
     });
 };
 
-User.updateById = (id, customer, result) => {
-    sql.query(
-        "UPDATE danhSachNguoiDung SET email = ?, name = ?, active = ? WHERE id = ?",
-        [customer.email, customer.name, customer.active, id], (err, res) => {
+User.UPDATE_DETAIL_USER_BY_ID = (maNguoiDung, user, result) => {
+    sql.query( `UPDATE danhSachNguoiDung SET
+        tenNguoiDung = ?,
+        tenHienThi = ?,
+        soDienThoai = ?,
+        chucVu = ?,
+        email = ?,
+        loaiNguoiDung = ? WHERE maNguoiDung = ?`,
+        [user.tenNguoiDung, user.tenHienThi, user.soDienThoai, user.chucVu, user.email, user.loaiNguoiDung, maNguoiDung], (err, res) => {
             if (err) {
                 console.log("error: ", err);
                 result(null, err);
@@ -91,12 +122,55 @@ User.updateById = (id, customer, result) => {
                 result({ kind: "not_found" }, null);
                 return;
             }
-            console.log("updated customer: ", { id: id, ...customer });
-            result(null, { id: id, ...customer });
-        }
-    );
+            console.log("updated customer: ", { maNguoiDung: maNguoiDung, ...user });
+            result(null, { maNguoiDung: maNguoiDung, ...user });
+        });
 };
 
+User.vadidatePass = (pass) => {
+    sql.query(`SELECT * FROM ${table.USER_Table} WHERE matKhau = ${pass}`, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+        console.log("matKhau: ", res);
+        return result(null, res);
+    })
+}
+
+
+User.SWITCHING_PASSWORD = (id, matKhau, result) => {
+    sql.query( `UPDATE danhSachNguoiDung SET matKhau = ? WHERE maNguoiDung =?`, [matKhau, id],  (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+        if (res.affectedRows == 0) {
+            // not found Customer with the id
+            result({ kind: "not_found" }, null);
+            return;
+        }
+        result(null, "password have been changed ");
+    });
+};
+
+User.STATUS_CHANGE = (id, status, result) => {
+    sql.query( `UPDATE danhSachNguoiDung SET trangThai = ? WHERE maNguoiDung =?`, [status, id],  (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+        if (res.affectedRows == 0) {
+            // not found Customer with the id
+            result({ kind: "not_found" }, null);
+            return;
+        }
+        result(null, "Status have been changed ");
+    })
+}
 User.remove = (id, result) => {
     sql.query("DELETE FROM customers WHERE id = ?", id, (err, res) => {
         if (err) {
@@ -109,7 +183,6 @@ User.remove = (id, result) => {
             result({ kind: "not_found" }, null);
             return;
         }
-
         console.log("deleted customer with id: ", id);
         result(null, res);
     });
@@ -122,7 +195,6 @@ User.removeAll = result => {
             result(null, err);
             return;
         }
-
         console.log(`deleted ${res.affectedRows} customers`);
         result(null, res);
     });
