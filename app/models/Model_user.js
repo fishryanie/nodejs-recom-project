@@ -1,4 +1,5 @@
 const sql = require("../../Connect");
+const TableName = require("../Configs/TableName");
 const table = require("../Configs/TableName")
 // constructor
 
@@ -16,7 +17,7 @@ const User = function (user) {
 
 //find all userName
 User.selectUserName = (taiKhoan, matKhau, result) => {
-    sql.query("SELECT * FROM danhSachNguoiDung WHERE taiKhoan = ? AND matKhau = ?",
+    sql.query(`SELECT * FROM ${table.USER_Table} WHERE taiKhoan = ? AND matKhau = ?`,
     [taiKhoan, matKhau] , (err, res) => {
         if (err) {
             console.log("error: ", err);
@@ -48,7 +49,7 @@ User.create = (newCustomer, result) => {
 
 // get detail all user with id
 User.findById = (maNguoiDung, result) => {
-    sql.query(`SELECT * FROM danhSachNguoiDung WHERE maNguoiDung = ${maNguoiDung}`, (err, res) => {
+    sql.query(`SELECT * FROM ${table.USER_Table} WHERE maNguoiDung = ${maNguoiDung}`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(err, null);
@@ -66,7 +67,7 @@ User.findById = (maNguoiDung, result) => {
 
 // All user trangThai oder 0
 User.getAll = result => {
-    sql.query("SELECT * FROM danhSachNguoiDung WHERE trangThai <> 0 AND loaiNguoiDung <> 0" , (err, res) => {
+    sql.query(`SELECT * FROM ${table.USER_Table} WHERE trangThai <> 0 AND loaiNguoiDung <> 0` , (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -79,7 +80,7 @@ User.getAll = result => {
 
 // Favorite
 User.getFavorite = result => {
-    sql.query("SELECT * FROM danhSachNguoiDung WHERE trangThai = 2 AND loaiNguoiDung = 0", (err, res) => {
+    sql.query(`SELECT * FROM ${table.USER_Table} WHERE trangThai = 2 AND loaiNguoiDung = 0`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -104,7 +105,7 @@ User.getTrash = result => {
 };
 
 User.UPDATE_DETAIL_USER_BY_ID = (maNguoiDung, user, result) => {
-    sql.query( `UPDATE danhSachNguoiDung SET
+    sql.query( `UPDATE ${table.USER_Table} SET
         tenNguoiDung = ?,
         tenHienThi = ?,
         soDienThoai = ?,
@@ -141,7 +142,7 @@ User.vadidatePass = (pass) => {
 
 
 User.SWITCHING_PASSWORD = (id, matKhau, result) => {
-    sql.query( `UPDATE danhSachNguoiDung SET matKhau = ? WHERE maNguoiDung =?`, [matKhau, id],  (err, res) => {
+    sql.query( `UPDATE ${table.USER_Table} SET matKhau = ? WHERE maNguoiDung =?`, [matKhau, id],  (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -157,7 +158,7 @@ User.SWITCHING_PASSWORD = (id, matKhau, result) => {
 };
 
 User.STATUS_CHANGE = (id, status, result) => {
-    sql.query( `UPDATE danhSachNguoiDung SET trangThai = ? WHERE maNguoiDung =?`, [status, id],  (err, res) => {
+    sql.query( `UPDATE ${table.USER_Table} SET trangThai = ? WHERE maNguoiDung =?`, [status, id],  (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -172,7 +173,7 @@ User.STATUS_CHANGE = (id, status, result) => {
     })
 }
 User.remove = (id, result) => {
-    sql.query("DELETE FROM customers WHERE id = ?", id, (err, res) => {
+    sql.query(`DELETE FROM ${table.USER_Table} WHERE id = ?`, id, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);

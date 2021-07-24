@@ -67,16 +67,14 @@ exports.findUserName = (req, res) => {
 
 // Retrieve all Customers from the database.
 exports.findAll = (req, res) => {
+
+
+    
     User.getAll((err, data) => {
-        if (err)
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving customers."
-            });
-        else res.send(data);
-        listUser = data
-        console.log(listUser)
+        if (err) res.status(500).send({ message: err.message || "Some error occurred while retrieving user."});
+        else res.send(data)
     });
+
 };
 
 exports.findListFavorite = (req, res) => {
@@ -144,9 +142,6 @@ exports.update = (req, res) => {
     );
 };
 
-exports.checkyourallpass = (req, res) => {
-    
-}
 
 exports.switchingPassword = (req, res) => {
     const id =  req.params.maNguoiDung;

@@ -4,12 +4,12 @@ exports.sendMail = (newPassword, toMail) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'quanphps14761@fpt.edu.vn',
-          pass: '2171998Ryanphan'
+          user: 'recom.flex@gmail.com',
+          pass: 'flex123456'
         }
       });
     let mailOptions = {
-        from: "quanphps14761@fpt.edu.vn",
+        from: "recom.flex@gmail.com",
         to: toMail,
         subject: '[Recom App] Notification your password',
         text:`Hi ${toMail}, \n \nMật khẩu tạm thời của bạn là : ${newPassword} \nHãy vào trang cá nhân và đổi lại mật khẩu \n\nThanks, \nThe Recom Team
